@@ -1,0 +1,16 @@
+docker-compose.yml
+__pycache__/
+env/
+venv/
+.git/
+.gitlab-ci.variables.yaml
+.gitlab-variables.yaml
+.gitignore
+.gitlint
+.idea/
+logs/*
+.dockerignore
+ruff.toml
+.gitlab-ci.yml
+.pre-commit-config.yaml
+README.md

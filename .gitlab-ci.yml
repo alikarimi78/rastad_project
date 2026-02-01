@@ -1,0 +1,55 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: always
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: always
+    - when: never
+
+stages: [test, build, deploy]
+
+default:
+  tags: [tabtil]
+
+variables:
+  image_repository: my_repo
+  image_name: tabtil_project
+  image_tag: 1
+
+
+test-job:
+  stage: test
+  image: docker:27
+  services:
+    - docker:27-dind
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+  script:
+    - docker build -t ${image_name}:ci .
+
+    - docker run --rm ${image_name}:ci python manage.py test
+
+
+build-job:
+  stage: build
+  image: docker:27
+  services:
+    - docker:27-dind
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  before_script:
+    - echo "$DOCKER_REGISTRY_PASS" | docker login "$DOCKER_REGISTRY" -u "$DOCKER_REGISTRY_USER" --password-stdin
+  script:
+    - docker build -t $image_repository/${image_name}:${image_tag} .
+    - docker push $image_repository/${image_name}:${image_tag}
+
+
+deploy-job:
+  stage: deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  script:
+    - sudo -n bash -lc 'cd /root/deployment &&
+        docker compose -f compose.prod.yml down &&
+        docker compose -f compose.prod.yml up --build -d'
