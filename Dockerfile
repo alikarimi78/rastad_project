@@ -9,8 +9,7 @@ RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 COPY requirements.txt requirements.txt
-#RUN python -m pip install --upgrade pip && pip install -r requirements.txt
-RUN pip install -r requirements.txt
+RUN python -m pip install --upgrade pip && pip install -r requirements.txt
 COPY . .
 
 RUN chmod +x entrypoint.sh

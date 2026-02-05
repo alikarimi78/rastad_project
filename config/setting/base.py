@@ -40,7 +40,7 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 LOCAL_APPS = [
-    "user.apps.UserConfig",
+    "users.apps.UsersConfig",
 ]
 THIRD_PARTY_APPS = [
     "corsheaders",
@@ -77,7 +77,7 @@ DATABASES = {
         "PORT": os.getenv("POSTGRES_PORT_NUMBER"),
     },
 }
-AUTH_USER_MODEL = "billing.User"
+AUTH_USER_MODEL = "users.User"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
@@ -94,16 +94,17 @@ SIMPLE_JWT = {
     "UPDATE_LAST_LOGIN": True,
 }
 
-CACHE_USER_TTL = int(os.getenv("REDIS_USER_TTL", 600))
+CACHE_TTL = int(os.getenv("REDIS_TTL", 600))
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": f"redis://{os.getenv('REDIS_USERNAME')}:{os.getenv('REDIS_PASSWORD')}@{os.getenv('REDIS_HOST')}:6379/1",
         "KEY_PREFIX": "rent",
-        "TIMEOUT": CACHE_USER_TTL,
+        "TIMEOUT": CACHE_TTL,
     },
 }
 
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators

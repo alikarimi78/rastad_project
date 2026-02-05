@@ -1,4 +1,0 @@
-user auth
-build model
-setting
-urls
