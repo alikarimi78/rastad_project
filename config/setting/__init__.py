@@ -10,9 +10,9 @@ FAIL = "\033[91m"
 DEBUG = bool(int(os.getenv("DEBUG", 0)))
 
 if DEBUG:
-    from config.settings.test import *  # noqa
+    from config.setting.test import *  # noqa
 else:
-    from config.settings.production import *  # noqa
+    from config.setting.production import *  # noqa
 
 print(OKCYAN + "-- Production settings imported --" + ENDC)
 
