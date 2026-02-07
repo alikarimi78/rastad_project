@@ -1,6 +1,8 @@
-python-telegram-bot==22.6
+anyio==4.12.1
 asgiref==3.11.0
+certifi==2026.1.4
 cfgv==3.5.0
+channels==4.3.2
 click==8.3.1
 distlib==0.4.0
 Django==5.2.9
@@ -11,13 +13,17 @@ djangorestframework_simplejwt==5.5.1
 filelock==3.20.1
 gunicorn==23.0.0
 h11==0.16.0
+httpcore==1.0.9
+httpx==0.28.1
 identify==2.6.15
+idna==3.11
 nodeenv==1.10.0
 packaging==25.0
 platformdirs==4.5.1
 pre_commit==4.5.1
 psycopg2-binary==2.9.11
 PyJWT==2.10.1
+python-telegram-bot==22.6
 PyYAML==6.0.3
 redis==7.1.0
 sqlparse==0.5.5

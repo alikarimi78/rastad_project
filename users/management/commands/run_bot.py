@@ -1,4 +1,8 @@
 import re
+import time
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 from django.core.management.base import BaseCommand
 from django.conf import settings
 
@@ -9,9 +13,22 @@ from users import services
 
 REF_RE = re.compile(r"^ref_(\d+)$")
 
+PERSIAN_WEEKDAYS = [
+    "دوشنبه",   # 0
+    "سه‌شنبه",  # 1
+    "چهارشنبه", # 2
+    "پنجشنبه",  # 3
+    "جمعه",     # 4
+    "شنبه",     # 5
+    "یکشنبه",   # 6
+]
+
+tz = ZoneInfo("Asia/Tehran")      # ایران
+
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     tg_id = update.effective_user.id
-    services.upsert_user(tg_id)
+    await services.upsert_user_async(tg_id)
 
     msg = "ثبت‌نام انجام شد."
     if context.args:
@@ -19,7 +36,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if m:
             referrer_id = int(m.group(1))
             try:
-                ref = services.create_referral(referrer_id, tg_id)
+                ref = await services.create_referral_async(referrer_id, tg_id)
                 # اگر قبلاً referrer داشته باشد، get_or_create همان قبلی را برمی‌گرداند
                 if ref.referrer.telegram_id != referrer_id:
                     msg = "قبلاً با یک referrer دیگر ثبت شده بودی؛ تغییری نکرد."
@@ -33,7 +50,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def my_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     tg_id = update.effective_user.id
     try:
-        dto = services.get_status(tg_id)
+        dto = await services.get_status_async(tg_id)
         txt = (
             f"telegram_id: {dto.telegram_id}\n"
             f"referrer_id: {dto.referrer_telegram_id}\n"
@@ -45,7 +62,7 @@ async def my_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def ref_summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
     tg_id = update.effective_user.id
-    data = services.get_ref_summary(tg_id)
+    data = await services.get_ref_summary_async(tg_id)
     if data["count"] == 0:
         await update.message.reply_text("فعلاً زیرمجموعه‌ای نداری.")
         return
@@ -55,6 +72,12 @@ async def ref_summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
         lines.append(f"- {r['telegram_id']} | {r['created_at']}")
     await update.message.reply_text("\n".join(lines))
 
+async def print_daily_note(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    now = datetime.now(tz)
+    weekday = PERSIAN_WEEKDAYS[now.weekday()]
+    time_str = now.strftime("%H:%M:%S")
+    await update.message.reply_text(f"امروز {weekday} ساعت {time_str} بیشتر از دیروز عاشقتم زهرای من")
+
 class Command(BaseCommand):
     help = "Run Telegram bot"
 
@@ -63,4 +86,5 @@ class Command(BaseCommand):
         app.add_handler(CommandHandler("start", start))
         app.add_handler(CommandHandler("my_status", my_status))
         app.add_handler(CommandHandler("ref_summary", ref_summary))
+        app.add_handler(CommandHandler("daily_note", print_daily_note))
         app.run_polling()
