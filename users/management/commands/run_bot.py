@@ -30,7 +30,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     tg_id = update.effective_user.id
     await services.upsert_user_async(tg_id)
 
-    msg = "ثبت‌نام انجام شد."
+    msg = "اگه شما زهرای منی، ثبت‌نام انجام شد 💖🫀😘✨\nبقیه مهم نیستن سیکتر😒"
     if context.args:
         m = REF_RE.match(context.args[0])
         if m:
@@ -76,7 +76,7 @@ async def print_daily_note(update: Update, context: ContextTypes.DEFAULT_TYPE):
     now = datetime.now(tz)
     weekday = PERSIAN_WEEKDAYS[now.weekday()]
     time_str = now.strftime("%H:%M:%S")
-    await update.message.reply_text(f"امروز {weekday} ساعت {time_str} بیشتر از دیروز عاشقتم زهرای من")
+    await update.message.reply_text(f"امروز {weekday} ساعت {time_str} بیشتر از دیروز عاشقتم زهرای من🫀😘🫠 ")
 
 class Command(BaseCommand):
     help = "Run Telegram bot"
